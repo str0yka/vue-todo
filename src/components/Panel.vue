@@ -1,27 +1,17 @@
-<script lang="ts">
-interface Todo {
-  id: number;
-  title: string;
-  completed: boolean;
-}
+<script setup lang="ts">
+import { ref } from 'vue';
 
-export default {
-  emits: ['addTodo'],
-  data(): { todo: { title: string } } {
-    return {
-      todo: { title: '' }
-    };
-  },
+const emit = defineEmits<{ addTodo: [{ title: string }] }>();
 
-  methods: {
-    onSubmit() {
-      this.$emit('addTodo', this.todo);
-      this.formReset();
-    },
-    formReset() {
-      this.todo.title = '';
-    }
-  }
+const todo = ref({ title: '' });
+
+const formReset = () => {
+  todo.value.title = '';
+};
+
+const onSubmit = () => {
+  emit('addTodo', todo.value);
+  formReset();
 };
 </script>
 

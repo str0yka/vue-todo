@@ -1,21 +1,12 @@
-<script lang="ts">
-import type { PropType } from 'vue';
-
+<script setup lang="ts">
 interface Todo {
   id: number;
   title: string;
   completed: boolean;
 }
 
-export default {
-  props: {
-    todos: {
-      type: Array as PropType<Todo[]>,
-      required: true
-    }
-  },
-  emits: ['deleteTodo']
-};
+const { todos } = defineProps<{ todos: Todo[] }>();
+const emit = defineEmits<{ deleteTodo: [number] }>();
 </script>
 
 <template>
@@ -32,7 +23,7 @@ export default {
         />
         <button
           type="button"
-          @click="$emit('deleteTodo', todo.id)"
+          @click="emit('deleteTodo', todo.id)"
         >
           Delete this todo
         </button>
