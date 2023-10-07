@@ -5,37 +5,39 @@ import List from './components/List.vue';
 interface Todo {
   id: number;
   title: string;
-  description: string;
-  checked: boolean;
+  completed: boolean;
 }
 
 export default {
   components: { Panel, List },
-  data(): { todos: Todo[]; count: number; todo: Omit<Todo, 'id' | 'checked'> } {
+  data(): { status: 'loading' | 'finished' | 'error'; todos: Todo[]; todo: { title: string } } {
     return {
-      todos: [
-        { id: 1, title: 'some title', description: 'some description', checked: false },
-        { id: 2, title: 'some title', description: 'some description', checked: true },
-        { id: 3, title: 'some title', description: 'some description', checked: false },
-        { id: 4, title: 'some title', description: 'some description', checked: true },
-        { id: 5, title: 'some title', description: 'some description', checked: false }
-      ],
-      count: 0,
-      todo: { title: '', description: '' }
+      status: 'loading',
+      todos: [],
+      todo: { title: '' }
     };
+  },
+
+  async beforeMount() {
+    try {
+      this.status = 'loading';
+      const response = await fetch('https://jsonplaceholder.typicode.com/todos');
+      const todos = await response.json();
+
+      this.todos = todos;
+    } catch {
+      this.status = 'error';
+    } finally {
+      this.status = 'finished';
+    }
   },
 
   methods: {
     addTodo(todo: { title: string; description: string }) {
-      this.todos.push({ ...todo, id: this.todos.length + 1, checked: false });
-      this.formReset();
+      this.todos.push({ ...todo, id: this.todos.length + 1, completed: false });
     },
     deleteTodo(id: number) {
       this.todos = this.todos.filter((todo) => todo.id !== id);
-    },
-    formReset() {
-      this.todo.title = '';
-      this.todo.description = '';
     }
   },
 
@@ -48,7 +50,10 @@ export default {
 <template>
   <h1>Todo App 🔥</h1>
   <Panel @addTodo="addTodo" />
+  <h2 v-if="status === 'loading'">Loading...</h2>
+  <h2 v-if="status === 'error'">Error</h2>
   <List
+    v-if="status !== 'loading' && !!todos.length"
     :todos="todos"
     @deleteTodo="deleteTodo"
   />

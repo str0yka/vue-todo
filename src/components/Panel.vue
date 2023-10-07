@@ -2,15 +2,14 @@
 interface Todo {
   id: number;
   title: string;
-  description: string;
-  checked: boolean;
+  completed: boolean;
 }
 
 export default {
   emits: ['addTodo'],
-  data(): { todo: Omit<Todo, 'id' | 'checked'> } {
+  data(): { todo: { title: string } } {
     return {
-      todo: { title: '', description: '' }
+      todo: { title: '' }
     };
   },
 
@@ -21,7 +20,6 @@ export default {
     },
     formReset() {
       this.todo.title = '';
-      this.todo.description = '';
     }
   }
 };
@@ -33,11 +31,6 @@ export default {
       type="text"
       placeholder="title"
       v-model="todo.title"
-    />
-    <input
-      type="text"
-      placeholder="description"
-      v-model="todo.description"
     />
     <button type="submit">add todo</button>
   </form>

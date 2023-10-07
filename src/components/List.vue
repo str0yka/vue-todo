@@ -1,26 +1,34 @@
 <script lang="ts">
-import { onMounted } from 'vue';
+import type { PropType } from 'vue';
+
+interface Todo {
+  id: number;
+  title: string;
+  completed: boolean;
+}
 
 export default {
-  props: ['todos'],
+  props: {
+    todos: {
+      type: Array as PropType<Todo[]>,
+      required: true
+    }
+  },
   emits: ['deleteTodo']
 };
 </script>
 
 <template>
-  <h2 v-if="!todos.length">no todos</h2>
-  <ul
-    v-if="!!todos.length"
-    v-for="todo in todos"
-    :key="todo.id"
-  >
-    <li>
+  <ul>
+    <li
+      v-for="todo in todos"
+      :key="todo.id"
+    >
       <div>
-        <h2 :class="{ todoDone: todo.checked }">{{ todo.title }}</h2>
-        <p>{{ todo.description }}</p>
+        <h2 :class="{ todoDone: todo.completed }">{{ todo.title }}</h2>
         <input
           type="checkbox"
-          v-model="todo.checked"
+          v-model="todo.completed"
         />
         <button
           type="button"
